@@ -1,4 +1,4 @@
-name = "epos-create-payment-token"
+name = "demo-paymentlink"
 type = "javascript"
 main = "functions/create-payment-token.js"
 # Add your Cloudflare Account ID and other settings before publishing.
