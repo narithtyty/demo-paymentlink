@@ -1,0 +1,6 @@
+{
+  "name": "EPOS Payment Link Generator",
+  "description": "Generate secure payment links and checkout pages using EPOS e-Cashier integration with JWT-signed payloads.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
