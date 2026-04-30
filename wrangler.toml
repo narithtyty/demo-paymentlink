@@ -3,5 +3,4 @@ type = "javascript"
 main = "functions/create-payment-token.js"
 # Add your Cloudflare Account ID and other settings before publishing.
 # Replace with your actual account id before running `npx wrangler deploy`.
-account_id = "YOUR_ACCOUNT_ID_HERE"
 compatibility_date = "2026-04-30"
