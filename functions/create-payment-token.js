@@ -23,16 +23,48 @@ async function signHS256(message, secret) {
   return base64Url(new Uint8Array(sig));
 }
 
+function withCors(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
 export default {
   async fetch(request) {
+    const url = new URL(request.url);
+    const pathname = url.pathname || '/';
+
+    // Handle CORS preflight
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type',
+        },
+      });
+    }
+
+    // Simple GET info endpoint at root or /api
+    if (request.method === 'GET') {
+      return withCors({ message: 'EPOS Payment Link Worker', usage: 'POST JSON { payload, secretKey } to this endpoint' });
+    }
+
     if (request.method !== 'POST') {
-      return new Response(JSON.stringify({ error: 'Method Not Allowed' }), { status: 405, headers: { 'Content-Type': 'application/json' } });
+      return withCors({ error: 'Method Not Allowed' }, 405);
     }
 
     try {
       const { payload, secretKey } = await request.json();
       if (!payload || !secretKey) {
-        return new Response(JSON.stringify({ error: 'Missing payload or secretKey' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        return withCors({ error: 'Missing payload or secretKey' }, 400);
       }
 
       const header = { alg: 'HS256', typ: 'JWT' };
@@ -42,9 +74,9 @@ export default {
       const signature = await signHS256(signingInput, secretKey);
       const token = `${signingInput}.${signature}`;
 
-      return new Response(JSON.stringify({ token }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      return withCors({ token }, 200);
     } catch (err) {
-      return new Response(JSON.stringify({ error: err.message || 'Internal Server Error' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+      return withCors({ error: err.message || 'Internal Server Error' }, 500);
     }
   },
 };

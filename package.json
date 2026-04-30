@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:worker": "npx wrangler dev functions/create-payment-token.js --port 8787",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:worker\"",
     "deploy:worker": "npx wrangler deploy",
     "deploy": "npm run build && npm run deploy:worker",
     "build": "vite build",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^22.14.0",
+    "concurrently": "^8.2.0",
     "autoprefixer": "^10.4.21",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
